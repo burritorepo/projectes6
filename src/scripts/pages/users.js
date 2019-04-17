@@ -13,14 +13,11 @@ class Users {
     };
 
     async handleData(promise) {
-        try {
-            let response = await promise;
-            let users = await response.json();
 
-            this.insertDom(this.makeTemplate(users), this.makePagination(users));
-        } catch (err) {
-            this.handleError(err);
-        }
+        let response = await promise;
+        let users = await response.json();
+        this.insertDom(this.makeTemplate(users), this.makePagination(users));
+
     };
 
     handleError() {
@@ -45,12 +42,35 @@ class Users {
         return `<div class="page page-users"><div class="container d-flex flex-nowrap">${usersArr.join('')}</div></div>`;
     }
 
-    makePagination(listUsers) {
-        return '<div>ola</div>'
+    makePagination(users) {
+        let { total_pages } = users;
+        let colArr = [];
+        for(let i= 1; i<=total_pages; i++) {
+            colArr.push(`<li class="page-item">
+            <a class="page-link" href="users?page=${i}">${i}</a>
+          </li>`)
+        };
+        
+        let template = `<ul class="pagination justify-content-center">
+                ${colArr.join('')}   
+            </li>
+        </ul>`;
+
+
+        return template;
     }
 
     insertDom(...element) {
         document.querySelector('#main').innerHTML += element.join('');
+
+        document.querySelectorAll('.page-link').forEach((element) => {
+            element.addEventListener('click', (e) => {
+                // console.log('click', e.target.href)
+                e.preventDefault();
+                // console.log(e.getAttribute("href"))
+                this.handleData(this.getData('users', '?page=3'));
+            })
+        })
     }
 
     init() {
