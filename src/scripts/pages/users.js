@@ -1,7 +1,9 @@
 "use strict";
-import "../../scss/pages/_users.scss";
+import "../../styles/pages/_users.scss";
+
 class Users {
     constructor() {
+        console.log('contructor!!!')
         this.urlBase = 'https://reqres.in/api';
         this.init();
     }
@@ -15,7 +17,7 @@ class Users {
             let response = await promise;
             let users = await response.json();
 
-            this.insertDom(this.makeTemplate(users));
+            this.insertDom(this.makeTemplate(users), this.makePagination(users));
         } catch (err) {
             this.handleError(err);
         }
@@ -40,16 +42,15 @@ class Users {
 
             return template;
         })
-
         return `<div class="page page-users"><div class="container d-flex flex-nowrap">${usersArr.join('')}</div></div>`;
     }
 
-    makePagination() {
-        
+    makePagination(listUsers) {
+        return '<div>ola</div>'
     }
 
-    insertDom(element) {
-        document.querySelector('#main').innerHTML += element;
+    insertDom(...element) {
+        document.querySelector('#main').innerHTML += element.join('');
     }
 
     init() {
@@ -57,4 +58,5 @@ class Users {
     }
 }
 
-let users = new Users();
+new Users();
+

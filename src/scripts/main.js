@@ -1,4 +1,3 @@
 "use strict";
-import '../scss/main.scss';
-import 'bootstrap';
+import '../styles/main.scss';
 import './pages/users';
