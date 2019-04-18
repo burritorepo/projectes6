@@ -1,3 +1,5 @@
 "use strict";
 import '../styles/main.scss';
-import './pages/users';
+import { Users } from './pages/users';
+
+new Users();

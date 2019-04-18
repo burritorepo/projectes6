@@ -1,7 +1,9 @@
 "use strict";
-import "../../styles/pages/_users.scss";
+ 
 
-class Users {
+import {DetailUser} from './detail-user';
+
+export class Users {
     /**
      * 
      */
@@ -15,20 +17,20 @@ class Users {
      * @param {*} url 
      * @param {*} query 
      */
-    getData(url, query) {
-        return fetch(`${this.urlBase}/${url}${query}`)
+    getData(entity, query) {
+        return fetch(`${this.urlBase}/${entity}${query}`)
     };
 
     async handleData(promise) {
-        try {
-            let response = await promise;
-            let users = await response.json();
 
-            this.usersMakeTemplate(users);
-            this.paginationMakeTemplate(users);
-        } catch(err) {
-            this.handleError('err', err)
-        }
+        let response = await promise;
+        let users = await response.json();
+
+        this.usersMakeTemplate(users);
+        this.paginationMakeTemplate(users);
+
+        // this.handleError('err', err)
+
     };
 
     /**
@@ -40,25 +42,40 @@ class Users {
 
     /**
      * 
+     * @param {*} id 
+     * @param {*} e 
+     */
+    goDetail(id, e) {
+        e.preventDefault();
+        new DetailUser(id);
+    }
+
+    /**
+     * 
      * @param {*} users 
      */
     usersMakeTemplate(users) {
         let { data: listUsers } = users;
-        let usersArr = [];
-        usersArr = listUsers.map((user) => {
-            let template = `<div class="col"><div class="card">
+        document.querySelector('#users').innerHTML = `<div class="page page-users"> <div class="container d-flex flex-nowrap"></div></div>`;
+
+        listUsers.forEach((user) => {
+            let div = document.createElement('div');
+
+            div.classList.add('col');
+
+            div.innerHTML = `<div class="card">
                 <img src="${user.avatar}" class="card-img-top" alt="${user.first_name}">
                 <div class="card-body">
                     <h5 class="card-title">${user.first_name}</h5>
                     <p class="card-text">${user.last_name}</p>
-                    <a href="/users/${user.id}" class="btn btn-primary">Detail</a>
+                    <a href="#" class="btn btn-primary">Detail</a>
                 </div>
-            </div></div>`;
+            </div>`
 
-            return template;
-        })
+            div.querySelector('.btn').addEventListener('click', this.goDetail.bind(this, user.id))
 
-        document.querySelector('#users').innerHTML = `<div class="page page-users"><div class="container d-flex flex-nowrap">${usersArr.join('')}</div></div>`;
+            document.querySelector('#users .container').appendChild(div);
+        });
     };
 
     /**
@@ -70,7 +87,7 @@ class Users {
         if (!document.querySelector('#users-nav').children.length) {
             let { total_pages, page } = users;
             let ul = document.createElement('ul');
-            
+
             ul.classList.add('pagination', 'justify-content-center');
 
             let pagination = (query, e) => {
@@ -83,7 +100,7 @@ class Users {
                 });
 
                 currentLi.classList.add('active');
-                
+
                 this.handleData(this.getData('users', query));
             }
 
@@ -92,7 +109,7 @@ class Users {
                 let span = document.createElement('span');
 
                 span.classList.add('page-link');
-                span.innerHTML = `${i}`;
+                span.innerHTML = `${i} `;
                 span.addEventListener('click', pagination.bind(this, `?page=${i}`));
 
                 li.appendChild(span);
@@ -115,6 +132,8 @@ class Users {
      * 
      */
     makeTemplate() {
+        document.querySelector('#main').innerHTML = '';
+        
         let wrapper = document.querySelector('#main');
         let divContent = document.createElement('div');
         let divNav = document.createElement('div');
@@ -133,7 +152,5 @@ class Users {
         this.makeTemplate()
         this.handleData(this.getData('users', '?page=1'));
     };
-}
-
-new Users();
+};
 
